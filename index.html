@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free IT Tools</title>
+  <!-- React — cdnjs with unpkg fallback -->
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script>window.React || document.write('<scr'+'ipt crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"><\/scr'+'ipt>')</script>
+  <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script>window.ReactDOM || document.write('<scr'+'ipt crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"><\/scr'+'ipt>')</script>
+  <!-- Font Awesome -->
+  <script async src="https://kit.fontawesome.com/2c15cc0cc7.js" crossorigin="anonymous"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Global Reset ─────────────────────────────────────────────────────── */
+    *, ::before, ::after { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; background: #f9fafb; }
+
+    /* ── Tab Navigation ───────────────────────────────────────────────────── */
+    .tab-nav { background: #1f2937; border-bottom: 1px solid #374151; position: sticky; top: 0; z-index: 100; }
+    .tab-nav-inner { max-width: 80rem; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+    .tab-nav-brand { font-size: 0.8rem; font-weight: 700; color: #6b7280; letter-spacing: 0.08em; text-transform: uppercase; padding: 1rem 0; white-space: nowrap; }
+    .tab-buttons { display: flex; }
+    .tab-btn { background: transparent; border: none; border-bottom: 2px solid transparent; color: #9ca3af; font-family: inherit; font-size: 0.875rem; font-weight: 500; padding: 1rem 1.25rem; cursor: pointer; transition: color 0.15s, border-color 0.15s; white-space: nowrap; }
+    .tab-btn:hover  { color: #e5e7eb; }
+    .tab-btn.active { color: #fff; border-bottom-color: #3b82f6; }
+
+    /* ── Tab Panels ───────────────────────────────────────────────────────── */
+    .tab-panel        { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Shared Footer ────────────────────────────────────────────────────── */
+    .site-footer { text-align: center; font-size: 0.75rem; color: #9ca3af; padding: 1.5rem 1rem 2rem; border-top: 1px solid #e5e7eb; background: #fff; margin-top: 2rem; }
+    .site-footer a { color: #9ca3af; text-decoration: underline; }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       BLOG POST GENERATOR
+    ══════════════════════════════════════════════════════════════════════ */
+    #tab-blog { background: #fff; }
+    #tab-blog h1,#tab-blog h2,#tab-blog h3,#tab-blog h4,#tab-blog h5,#tab-blog h6 { font-size: inherit; font-weight: inherit; margin: 0; }
+    #tab-blog p,#tab-blog blockquote,#tab-blog ul,#tab-blog ol,#tab-blog li { margin: 0; padding: 0; }
+    #tab-blog ul,#tab-blog ol { list-style: none; }
+    #tab-blog button { cursor: pointer; background: transparent; border: 0; font-family: inherit; font-size: 100%; color: inherit; }
+    #tab-blog input,#tab-blog textarea { font-family: inherit; font-size: 100%; font-weight: inherit; line-height: inherit; color: inherit; margin: 0; padding: 0; }
+    #tab-blog input::placeholder,#tab-blog textarea::placeholder { color: #9ca3af; opacity: 1; }
+    #tab-blog textarea { resize: vertical; }
+    #tab-blog a { color: inherit; text-decoration: inherit; }
+    .flex { display: flex; } .flex-col { flex-direction: column; } .flex-1 { flex: 1 1 0%; }
+    .block { display: block; } .w-full { width: 100%; } .h-4 { height: 1rem; } .h-32 { height: 8rem; }
+    .min-h-500 { min-height: 500px; } .max-w-none { max-width: none; } .mx-auto { margin-left: auto; margin-right: auto; }
+    .mt-1{margin-top:.25rem} .mt-4{margin-top:1rem} .mb-2{margin-bottom:.5rem} .mb-3{margin-bottom:.75rem} .mb-8{margin-bottom:2rem}
+    .p-2{padding:.5rem} .p-3{padding:.75rem} .p-6{padding:1.5rem} .px-4{padding-left:1rem;padding-right:1rem}
+    .py-2{padding-top:.5rem;padding-bottom:.5rem} .gap-8{gap:2rem}
+    .space-y-3>*+*{margin-top:.75rem} .space-y-6>*+*{margin-top:1.5rem} .relative{position:relative}
+    .bg-white{background-color:#fff} .bg-gray-50{background-color:#f9fafb} .bg-gray-200{background-color:#e5e7eb}
+    .text-xs{font-size:.75rem;line-height:1rem} .text-sm{font-size:.875rem;line-height:1.25rem}
+    .text-gray-400{color:#9ca3af} .text-gray-500{color:#6b7280} .text-gray-800{color:#1f2937}
+    .text-center{text-align:center} .font-medium{font-weight:500} .font-semibold{font-weight:600} .font-bold{font-weight:700}
+    .leading-snug{line-height:1.375} .leading-relaxed{line-height:1.625}
+    .border{border:1px solid #d1d5db} .border-t{border-top:1px solid #f3f4f6}
+    .border-gray-100{border-color:#f3f4f6} .rounded{border-radius:.25rem}
+    .resize-none{resize:none} .select-none{user-select:none;-webkit-user-select:none}
+    .transition-colors{transition:color .15s,background-color .15s,border-color .15s}
+    .btn-dark{background-color:#1f2937;color:#fff;transition:background-color .15s}
+    .btn-dark:hover:not(:disabled){background-color:#374151}
+    .btn-dark:disabled{background-color:#9ca3af;cursor:default}
+    .btn-mid{background-color:#4b5563;color:#fff;transition:background-color .15s}
+    .btn-mid:hover:not(:disabled){background-color:#6b7280}
+    .btn-mid:disabled{background-color:#9ca3af;cursor:default}
+    #tab-blog input[type="text"],#tab-blog textarea { border:1px solid #d1d5db; border-radius:.25rem; outline:none; transition:box-shadow .15s,border-color .15s; }
+    #tab-blog input[type="text"]:focus,#tab-blog textarea:focus { border-color:#9ca3af; box-shadow:0 0 0 2px rgba(156,163,175,.35); }
+    @keyframes blogPulse{0%,100%{opacity:1}50%{opacity:.5}}
+    .animate-pulse{animation:blogPulse 2s cubic-bezier(.4,0,.6,1) infinite}
+    @keyframes blogBlink{0%,100%{opacity:1}50%{opacity:0}}
+    .cursor::after{content:'▍';animation:blogBlink .8s ease infinite;color:#6b7280}
+    @keyframes blogFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+    .fade-in{animation:blogFadeIn .25s ease-out}
+    .left-panel{width:100%} .right-panel{width:100%}
+    @media(min-width:768px){.layout-row{flex-direction:row}.left-panel{width:33.333%}.right-panel{width:66.666%}}
+    .search-link{color:#2563eb;font-weight:500;font-size:.875rem;line-height:1.375}
+    .search-link:hover{text-decoration:underline}
+    .prose h1{font-size:1.75rem;font-weight:700;margin:1rem 0 .5rem;line-height:1.3;color:#1f2937}
+    .prose h2{font-size:1.35rem;font-weight:600;margin:1rem 0 .4rem;color:#1f2937}
+    .prose h3{font-size:1.15rem;font-weight:600;margin:.9rem 0 .3rem;color:#374151}
+    .prose p{margin:.6rem 0;line-height:1.75;color:#374151}
+    .prose ul{list-style:disc;padding-left:1.5rem;margin:.5rem 0}
+    .prose ol{list-style:decimal;padding-left:1.5rem;margin:.5rem 0}
+    .prose li{margin:.25rem 0;line-height:1.65;color:#374151}
+    .prose strong{font-weight:600} .prose em{font-style:italic}
+    .prose code{background:#f3f4f6;padding:0 .25rem;border-radius:.2rem;font-size:.875rem;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+    .prose blockquote{border-left:3px solid #d1d5db;padding-left:1rem;color:#6b7280;margin:.75rem 0}
+    .prose a{color:#2563eb;text-decoration:underline}
+
+    /* ══════════════════════════════════════════════════════════════════════
+       TEXT TO IMAGE
+    ══════════════════════════════════════════════════════════════════════ */
+    .image-scope {
+      --img-bg:#fff;--img-bg-panel:#f9fafb;--img-bg-input:#fff;--img-border:#e5e7eb;
+      --img-text:#111827;--img-text-muted:#374151;--img-text-faint:#9ca3af;
+      --img-btn-bg:#111827;--img-btn-hover:#374151;--img-placeholder:#9ca3af;--img-error:#ef4444;
+      background:var(--img-bg);display:flex;flex-direction:column;padding:2rem 1rem;
+    }
+    @media(prefers-color-scheme:dark){.image-scope{--img-bg:#111827;--img-bg-panel:#1f2937;--img-bg-input:#1f2937;--img-border:#374151;--img-text:#fff;--img-text-muted:#d1d5db;--img-text-faint:#4b5563;--img-btn-bg:#1f2937;--img-btn-hover:#374151;--img-placeholder:#6b7280;--img-error:#f87171}}
+    @media(min-width:768px){.image-scope{padding:3rem 1.5rem}}
+    .image-scope .img-container{max-width:48rem;width:100%;margin:0 auto}
+    .image-scope h1{font-size:2.25rem;font-weight:700;color:var(--img-text);margin:0 0 .75rem;line-height:1.2}
+    @media(min-width:768px){.image-scope h1{font-size:3rem}}
+    .image-scope .img-subtitle{color:var(--img-text-muted);margin-bottom:2rem;font-size:1rem;line-height:1.5}
+    .image-scope .img-form{display:flex;flex-direction:column;gap:1.25rem}
+    .image-scope textarea{width:100%;height:8rem;padding:1rem;border-radius:.5rem;border:1px solid var(--img-border);background:var(--img-bg-input);color:var(--img-text);font-family:inherit;font-size:1rem;line-height:1.5;resize:vertical;outline:none;transition:box-shadow .15s,border-color .15s}
+    .image-scope textarea::placeholder{color:var(--img-placeholder)}
+    .image-scope textarea:focus{border-color:#6b7280;box-shadow:0 0 0 2px rgba(107,114,128,.2)}
+    .image-scope textarea:disabled{opacity:.6;cursor:not-allowed}
+    .image-scope .img-error{color:var(--img-error);font-size:.875rem;min-height:1.25rem}
+    .image-scope .img-btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;background:var(--img-btn-bg);color:#fff;font-family:inherit;font-size:1rem;font-weight:500;border:none;border-radius:.375rem;cursor:pointer;outline:none;transition:background .15s;white-space:nowrap;width:100%}
+    @media(min-width:768px){.image-scope .img-btn{width:auto}}
+    .image-scope .img-btn:hover:not(:disabled){background:var(--img-btn-hover)}
+    .image-scope .img-btn:disabled{opacity:.5;cursor:not-allowed}
+    .image-scope .image-area{margin-top:2rem}
+    .image-scope .image-placeholder{width:100%;aspect-ratio:1/1;background:var(--img-bg-panel);border-radius:.5rem;border:2px dashed var(--img-border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;padding:1.5rem;text-align:center}
+    .image-scope .image-placeholder i{font-size:2.5rem;color:var(--img-text-faint)}
+    .image-scope .image-placeholder p{color:var(--img-text-muted);font-size:.9375rem;margin:0}
+    .image-scope .image-skeleton{width:100%;aspect-ratio:1/1;background:var(--img-bg-panel);border-radius:.5rem;display:flex;align-items:center;justify-content:center;animation:imgPulse 2s cubic-bezier(.4,0,.6,1) infinite}
+    @keyframes imgPulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .image-scope .image-skeleton i{font-size:2.5rem;color:var(--img-text-faint)}
+    .image-scope .generated-img{width:100%;border-radius:.5rem;display:block}
+    .image-scope .download-btn{display:inline-flex;align-items:center;gap:.4rem;margin-top:.75rem;padding:.4rem .9rem;background:var(--img-bg-panel);border:1px solid var(--img-border);border-radius:.375rem;font-size:.875rem;font-family:inherit;color:var(--img-text-muted);cursor:pointer;text-decoration:none;transition:background .15s}
+    .image-scope .download-btn:hover{background:var(--img-border)}
+
+    /* ══════════════════════════════════════════════════════════════════════
+       ROI CALCULATOR
+    ══════════════════════════════════════════════════════════════════════ */
+    .roi-scope{background:#f9fafb;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;color:#111827;min-height:80vh}
+    .roi-scope .roi-card{background:#fff;border-radius:.75rem;box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);width:100%;max-width:28rem;padding:2rem}
+    @media(min-width:768px){.roi-scope .roi-card{max-width:42rem}}
+    .roi-scope h1{font-size:1.875rem;font-weight:700;text-align:center;color:#111827;margin:0 0 2rem}
+    .roi-scope .roi-form{display:flex;flex-direction:column;gap:1.5rem}
+    .roi-scope label{display:block;font-size:.875rem;font-weight:500;color:#374151;margin-bottom:.5rem}
+    .roi-scope input[type="number"]{width:100%;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:.375rem;font-size:1rem;font-family:inherit;color:#111827;background:#fff;box-shadow:0 1px 2px 0 rgba(0,0,0,.05);outline:none;transition:border-color .15s,box-shadow .15s;-moz-appearance:textfield}
+    .roi-scope input[type="number"]::-webkit-inner-spin-button,.roi-scope input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none}
+    .roi-scope input[type="number"]:focus{border-color:#3b82f6;box-shadow:0 0 0 2px rgba(59,130,246,.25)}
+    .roi-scope input[type="number"]::placeholder{color:#9ca3af}
+    .roi-scope .roi-btn{width:100%;background:#2563eb;color:#fff;font-family:inherit;font-size:1rem;font-weight:500;padding:.5rem 1rem;border:none;border-radius:.375rem;cursor:pointer;transition:background-color .15s;outline:none}
+    .roi-scope .roi-btn:hover{background:#1d4ed8}
+    .roi-scope .roi-btn:focus{box-shadow:0 0 0 2px #fff,0 0 0 4px #3b82f6}
+    .roi-scope .roi-error{text-align:center;font-size:.875rem;color:#dc2626;min-height:1.25rem}
+    .roi-scope .roi-result{text-align:center;opacity:0;transform:translateY(6px);transition:opacity .25s ease,transform .25s ease;pointer-events:none}
+    .roi-scope .roi-result.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+    .roi-scope .result-label{font-size:1.125rem;font-weight:500;color:#111827;margin-bottom:.25rem}
+    .roi-scope .result-value{font-size:2.25rem;font-weight:700;line-height:1.2}
+    .roi-scope .result-value.positive{color:#2563eb}
+    .roi-scope .result-value.negative{color:#dc2626}
+    .roi-scope .result-value.zero{color:#6b7280}
+    .roi-scope .result-sub{font-size:.875rem;color:#6b7280;margin-top:.25rem}
+
+    /* ══════════════════════════════════════════════════════════════════════
+       SETTINGS
+    ══════════════════════════════════════════════════════════════════════ */
+    .settings-scope{background:#f9fafb;min-height:80vh;padding:2rem 1rem;display:flex;justify-content:center}
+    .settings-card{background:#fff;border-radius:.75rem;box-shadow:0 4px 6px -1px rgba(0,0,0,.1);width:100%;max-width:36rem;padding:2rem;height:fit-content}
+    .settings-card h1{font-size:1.5rem;font-weight:700;color:#111827;margin:0 0 .25rem}
+    .settings-subtitle{font-size:.875rem;color:#6b7280;margin:0 0 1.75rem;line-height:1.5}
+    .settings-section{border-top:1px solid #f3f4f6;padding-top:1.25rem;margin-top:1.25rem}
+    .settings-section:first-of-type{border-top:none;padding-top:0;margin-top:0}
+    .settings-section h2{font-size:.9375rem;font-weight:600;color:#1f2937;margin:0 0 1rem}
+    .settings-field{margin-bottom:1rem}
+    .settings-field label{display:block;font-size:.8125rem;font-weight:500;color:#374151;margin-bottom:.35rem}
+    .key-input-wrap{display:flex;gap:.5rem}
+    .settings-field input[type="password"],.settings-field input[type="text"]{width:100%;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:.375rem;font-size:.875rem;font-family:inherit;color:#111827;background:#fff;outline:none;transition:border-color .15s,box-shadow .15s}
+    .key-input-wrap input{flex:1}
+    .settings-field input:focus{border-color:#3b82f6;box-shadow:0 0 0 2px rgba(59,130,246,.2)}
+    .show-hide-btn{padding:.5rem .75rem;background:#f3f4f6;border:1px solid #d1d5db;border-radius:.375rem;font-size:.8125rem;font-family:inherit;color:#374151;cursor:pointer;white-space:nowrap;transition:background .15s}
+    .show-hide-btn:hover{background:#e5e7eb}
+    .settings-hint{font-size:.75rem;color:#9ca3af;margin:.35rem 0 0}
+    .settings-hint a{color:#2563eb;text-decoration:underline}
+    .settings-save-btn{width:100%;background:#2563eb;color:#fff;font-family:inherit;font-size:1rem;font-weight:500;padding:.6rem 1rem;border:none;border-radius:.375rem;cursor:pointer;transition:background .15s;margin-top:.5rem}
+    .settings-save-btn:hover{background:#1d4ed8}
+    .settings-msg{font-size:.875rem;min-height:1.5rem;margin-top:.75rem;text-align:center}
+    .settings-msg.success{color:#16a34a}
+    .settings-msg.error{color:#dc2626}
+    .settings-info{background:#eff6ff;border:1px solid #bfdbfe;border-radius:.5rem;padding:1rem 1.25rem;margin-top:1.5rem;font-size:.8125rem;color:#1e40af;line-height:1.6}
+  </style>
+</head>
+<body>
+  <!-- ── Tab Navigation ─────────────────────────────────────────────────────── -->
+  <nav class="tab-nav">
+    <div class="tab-nav-inner">
+      <span class="tab-nav-brand">Free IT Tools</span>
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="switchTab('blog',  this)">📝 Blog Post Generator</button>
+        <button class="tab-btn"        onclick="switchTab('image', this)">🎨 Text to Image</button>
+        <button class="tab-btn"        onclick="switchTab('roi',   this)">📊 ROI Calculator</button>
+        <button class="tab-btn"        onclick="switchTab('settings', this)">⚙️ Settings</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Blog Post Generator ────────────────────────────────────────────────── -->
+  <div id="tab-blog" class="tab-panel active">
+    <div id="blog-root"></div>
+  </div>
+
+  <!-- ── Text to Image ──────────────────────────────────────────────────────── -->
+  <div id="tab-image" class="tab-panel">
+    <div class="image-scope">
+      <div class="img-container">
+        <h1>Text to Image Generator</h1>
+        <p class="img-subtitle">Enter a detailed description and we'll generate an image for you.</p>
+        <div class="img-form">
+          <textarea id="img-prompt" placeholder="Describe the image you want to generate…"></textarea>
+          <div id="img-error" class="img-error"></div>
+          <button class="img-btn" id="img-generate-btn" onclick="imgGenerate()">Generate Image</button>
+        </div>
+        <div class="image-area" id="img-area">
+          <div class="image-placeholder">
+            <i class="fas fa-image"></i>
+            <p>Your generated image will appear here</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ROI Calculator ─────────────────────────────────────────────────────── -->
+  <div id="tab-roi" class="tab-panel">
+    <div class="roi-scope">
+      <div class="roi-card">
+        <h1>ROI Calculator</h1>
+        <div class="roi-form">
+          <div>
+            <label for="roi-initial">Initial Investment ($)</label>
+            <input id="roi-initial" type="number" placeholder="Enter initial investment" min="0" step="any" oninput="roiOnChange()" />
+          </div>
+          <div>
+            <label for="roi-final">Final Value ($)</label>
+            <input id="roi-final" type="number" placeholder="Enter final value" step="any" oninput="roiOnChange()" />
+          </div>
+          <button class="roi-btn" onclick="roiCalculate()">Calculate ROI</button>
+          <div id="roi-error"  class="roi-error"  aria-live="polite"></div>
+          <div id="roi-result" class="roi-result" aria-live="polite">
+            <div class="result-label">Return on Investment:</div>
+            <div id="roi-value" class="result-value positive"></div>
+            <div id="roi-sub"   class="result-sub"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Settings ───────────────────────────────────────────────────────────── -->
+  <div id="tab-settings" class="tab-panel">
+    <div class="settings-scope">
+      <div class="settings-card">
+        <h1>⚙️ API Settings</h1>
+        <p class="settings-subtitle">Keys are saved in your browser only and sent directly to the respective APIs — never stored elsewhere.</p>
+
+        <!-- Blog Post Generator -->
+        <div class="settings-section">
+          <h2>📝 Blog Post Generator</h2>
+          <div class="settings-field">
+            <label for="set-anthropic">Anthropic API Key</label>
+            <div class="key-input-wrap">
+              <input type="password" id="set-anthropic" placeholder="sk-ant-…" autocomplete="off" />
+              <button class="show-hide-btn" onclick="toggleVis('set-anthropic', this)">Show</button>
+            </div>
+            <p class="settings-hint">Get yours at <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a></p>
+          </div>
+        </div>
+
+        <!-- Text to Image -->
+        <div class="settings-section">
+          <h2>🎨 Text to Image</h2>
+          <div class="settings-field">
+            <label for="set-stability">Stability AI API Key</label>
+            <div class="key-input-wrap">
+              <input type="password" id="set-stability" placeholder="sk-…" autocomplete="off" />
+              <button class="show-hide-btn" onclick="toggleVis('set-stability', this)">Show</button>
+            </div>
+            <p class="settings-hint">Get yours at <a href="https://platform.stability.ai" target="_blank" rel="noopener">platform.stability.ai</a></p>
+          </div>
+        </div>
+
+        <!-- Google Search (optional) -->
+        <div class="settings-section">
+          <h2>🔍 Check Top 10 Results <span style="font-weight:400;color:#9ca3af;font-size:.8125rem">(optional)</span></h2>
+          <div class="settings-field">
+            <label for="set-google-key">Google API Key</label>
+            <div class="key-input-wrap">
+              <input type="password" id="set-google-key" placeholder="AIza…" autocomplete="off" />
+              <button class="show-hide-btn" onclick="toggleVis('set-google-key', this)">Show</button>
+            </div>
+          </div>
+          <div class="settings-field">
+            <label for="set-google-cx">Custom Search Engine ID (CX)</label>
+            <input type="text" id="set-google-cx" placeholder="e.g. 123456789:abcdefg" autocomplete="off" />
+          </div>
+          <p class="settings-hint">Set up at <a href="https://programmablesearchengine.google.com" target="_blank" rel="noopener">programmablesearchengine.google.com</a></p>
+        </div>
+
+        <button class="settings-save-btn" onclick="saveSettings()">Save Settings</button>
+        <div id="settings-msg" class="settings-msg"></div>
+
+        <div class="settings-info">
+          💡 If keys don't persist after closing the browser, your browser may be blocking storage in embedded pages. Try opening the page directly in a new tab.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Shared Footer ──────────────────────────────────────────────────────── -->
+  <footer class="site-footer">
+    Free IT Tools &nbsp;·&nbsp; <a href="privacy-policy.html">Privacy Policy</a>
+  </footer>
+
+  <!-- ── 1. Settings Utilities (must load first) ───────────────────────── -->
+  <script>
+    'use strict';
+    /* In-memory fallback if localStorage is blocked */
+    var _mem = {};
+    function _lsSet(k, v) { try { localStorage.setItem(k, v); } catch(e) { _mem[k] = v; } }
+    function _lsGet(k)    { try { return localStorage.getItem(k) || _mem[k] || ''; } catch(e) { return _mem[k] || ''; } }
+
+    function getSettings() {
+      return {
+        anthropicKey: _lsGet('fit_anthropic_key'),
+        stabilityKey: _lsGet('fit_stability_key'),
+        googleKey:    _lsGet('fit_google_key'),
+        googleCx:     _lsGet('fit_google_cx')
+      };
+    }
+
+    function saveSettings() {
+      _lsSet('fit_anthropic_key', document.getElementById('set-anthropic').value.trim());
+      _lsSet('fit_stability_key', document.getElementById('set-stability').value.trim());
+      _lsSet('fit_google_key',    document.getElementById('set-google-key').value.trim());
+      _lsSet('fit_google_cx',     document.getElementById('set-google-cx').value.trim());
+      var msg = document.getElementById('settings-msg');
+      msg.textContent = '✓ Settings saved!';
+      msg.className = 'settings-msg success';
+      setTimeout(function() { msg.textContent = ''; msg.className = 'settings-msg'; }, 3000);
+    }
+
+    function toggleVis(id, btn) {
+      var el = document.getElementById(id);
+      if (el.type === 'password') { el.type = 'text';     btn.textContent = 'Hide'; }
+      else                        { el.type = 'password'; btn.textContent = 'Show'; }
+    }
+
+    /* Pre-fill settings form from storage */
+    document.addEventListener('DOMContentLoaded', function() {
+      var s = getSettings();
+      document.getElementById('set-anthropic').value   = s.anthropicKey;
+      document.getElementById('set-stability').value   = s.stabilityKey;
+      document.getElementById('set-google-key').value  = s.googleKey;
+      document.getElementById('set-google-cx').value   = s.googleCx;
+    });
+  </script>
+
+  <!-- ── 2. Tab Switching ───────────────────────────────────────────────── -->
+  <script>
+    'use strict';
+    function switchTab(name, btn) {
+      document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+      document.querySelectorAll('.tab-btn').forEach(function(b)   { b.classList.remove('active'); });
+      document.getElementById('tab-' + name).classList.add('active');
+      btn.classList.add('active');
+    }
+  </script>
+
+  <!-- ── 3. Blog Post Generator (React + direct Anthropic API) ─────────── -->
+  <script>
+    'use strict';
+    try {
+      const e = React.createElement;
+      const { useState } = React;
+
+      function inlineFormat(text) {
+        var parts = [], regex = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g, last = 0, m;
+        while ((m = regex.exec(text)) !== null) {
+          if (m.index > last) parts.push(text.slice(last, m.index));
+          if      (m[0].startsWith('**')) parts.push(e('strong', { key: m.index }, m[2]));
+          else if (m[0].startsWith('`'))  parts.push(e('code',   { key: m.index }, m[4]));
+          else                             parts.push(e('em',     { key: m.index }, m[3]));
+          last = m.index + m[0].length;
+        }
+        if (last < text.length) parts.push(text.slice(last));
+        return parts;
+      }
+
+      function renderMarkdown(text) {
+        if (!text) return null;
+        var lines = text.split('\n'), elements = [], i = 0;
+        while (i < lines.length) {
+          var line = lines[i];
+          if      (line.startsWith('### ')) elements.push(e('h3', { key: i }, inlineFormat(line.slice(4))));
+          else if (line.startsWith('## '))  elements.push(e('h2', { key: i }, inlineFormat(line.slice(3))));
+          else if (line.startsWith('# '))   elements.push(e('h1', { key: i }, inlineFormat(line.slice(2))));
+          else if (line.startsWith('- ') || line.startsWith('* ')) {
+            var items = [];
+            while (i < lines.length && (lines[i].startsWith('- ') || lines[i].startsWith('* ')))
+              items.push(e('li', { key: i }, inlineFormat(lines[i++].slice(2))));
+            elements.push(e('ul', { key: 'ul' + i }, items)); continue;
+          } else if (/^\d+\. /.test(line)) {
+            var oitems = [];
+            while (i < lines.length && /^\d+\. /.test(lines[i]))
+              oitems.push(e('li', { key: i }, inlineFormat(lines[i++].replace(/^\d+\. /, ''))));
+            elements.push(e('ol', { key: 'ol' + i }, oitems)); continue;
+          } else if (line.startsWith('> ')) elements.push(e('blockquote', { key: i }, inlineFormat(line.slice(2))));
+          else if (line.trim() === '')       elements.push(e('br', { key: i }));
+          else                               elements.push(e('p',  { key: i }, inlineFormat(line)));
+          i++;
+        }
+        return elements;
+      }
+
+      function BlogPostGenerator() {
+        var _s0 = useState('');    var title         = _s0[0]; var setTitle         = _s0[1];
+        var _s1 = useState('');    var outline       = _s1[0]; var setOutline       = _s1[1];
+        var _s2 = useState('');    var keywords      = _s2[0]; var setKeywords      = _s2[1];
+        var _s3 = useState('');    var blogPost      = _s3[0]; var setBlogPost      = _s3[1];
+        var _s4 = useState(null);  var searchResults = _s4[0]; var setSearchResults = _s4[1];
+        var _s5 = useState(false); var loading       = _s5[0]; var setLoading       = _s5[1];
+        var _s6 = useState(false); var searchLoading = _s6[0]; var setSearchLoading = _s6[1];
+        var _s7 = useState(null);  var error         = _s7[0]; var setError         = _s7[1];
+        var _s8 = useState('');    var streaming     = _s8[0]; var setStreaming      = _s8[1];
+
+        async function generatePost() {
+          if (!title.trim() || !outline.trim()) { setError('Please provide both a title and outline.'); return; }
+          var s = getSettings();
+          if (!s.anthropicKey) { setError('Anthropic API key not set. Go to ⚙️ Settings.'); return; }
+          setLoading(true); setError(null); setBlogPost(''); setStreaming('');
+          try {
+            var response = await fetch('https://api.anthropic.com/v1/messages', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': s.anthropicKey,
+                'anthropic-version': '2023-06-01',
+                'anthropic-dangerous-direct-browser-access': 'true'
+              },
+              body: JSON.stringify({
+                model: 'claude-3-5-sonnet-20241022',
+                max_tokens: 4096,
+                stream: true,
+                system: 'You are an expert SEO blog post writer. Create engaging, well-structured content that naturally incorporates SEO best practices.',
+                messages: [{ role: 'user', content:
+                  'Please write a blog post with the following details:\nTitle: ' + title +
+                  '\nOutline/Notes: ' + outline + '\nTarget Keywords: ' + keywords +
+                  '\n\nPlease ensure the content is:\n- Well-structured with appropriate headings\n' +
+                  '- Engaging and informative\n- Naturally incorporates the keywords\n' +
+                  '- Uses clear paragraphs\n- Includes a compelling introduction and conclusion'
+                }]
+              })
+            });
+            if (!response.ok) {
+              var errData = await response.json().catch(function() { return {}; });
+              throw new Error(errData.error && errData.error.message ? errData.error.message : 'API error ' + response.status);
+            }
+            var reader = response.body.getReader(), decoder = new TextDecoder(), content = '', buffer = '';
+            while (true) {
+              var chunk = await reader.read();
+              if (chunk.done) break;
+              buffer += decoder.decode(chunk.value, { stream: true });
+              var lines = buffer.split('\n');
+              buffer = lines.pop();
+              for (var li = 0; li < lines.length; li++) {
+                var ln = lines[li];
+                if (!ln.startsWith('data: ')) continue;
+                var raw = ln.slice(6).trim();
+                if (raw === '[DONE]') continue;
+                try {
+                  var ev = JSON.parse(raw);
+                  if (ev.type === 'content_block_delta' && ev.delta && ev.delta.type === 'text_delta') {
+                    content += ev.delta.text; setStreaming(content);
+                  }
+                } catch (ignored) {}
+              }
+            }
+            setBlogPost(content); setStreaming('');
+          } catch (err) { setError(err.message || 'Failed to generate blog post.'); }
+          setLoading(false);
+        }
+
+        async function searchTopResults() {
+          if (!title.trim()) { setError('Please enter a title/query first.'); return; }
+          var s = getSettings();
+          if (!s.googleKey || !s.googleCx) { setError('Google API key and CX not set. Go to ⚙️ Settings.'); return; }
+          setSearchLoading(true); setError(null);
+          try {
+            var res  = await fetch('https://www.googleapis.com/customsearch/v1?key=' + encodeURIComponent(s.googleKey) + '&cx=' + encodeURIComponent(s.googleCx) + '&q=' + encodeURIComponent(title) + '&num=10');
+            var data = await res.json();
+            if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+            setSearchResults(data.items || []);
+          } catch (err) { setError(err.message || 'Failed to fetch search results.'); }
+          setSearchLoading(false);
+        }
+
+        var displayContent = streaming || blogPost;
+        var skeletonRows = ['75%','50%','83%','66%'].map(function(w, idx) {
+          return e('div', { key: idx, className: 'h-4 bg-gray-200 rounded animate-pulse', style: { width: w, marginTop: idx > 0 ? '0.75rem' : 0 } });
+        });
+        var searchItems = searchResults ? searchResults.slice(0, 10).map(function(r, idx) {
+          return e('div', { key: idx, className: 'p-3 bg-gray-50 rounded border border-gray-100' },
+            e('a', { href: r.link, target: '_blank', rel: 'noopener noreferrer', className: 'search-link' }, r.title),
+            e('p', { className: 'text-xs text-gray-500 mt-1 leading-relaxed' }, r.snippet)
+          );
+        }) : null;
+        var rightContent;
+        if (loading && !streaming)  rightContent = e('div', { className: 'space-y-3' }, skeletonRows);
+        else if (displayContent)    rightContent = e('div', { className: 'prose max-w-none' + (!streaming ? ' fade-in' : '') + (streaming ? ' cursor' : '') }, renderMarkdown(displayContent));
+        else                        rightContent = e('div', { className: 'text-gray-400 text-center text-sm select-none', style: { marginTop: '5rem' } }, 'Your generated blog post will appear here');
+
+        return e('div', { style: { background: '#fff', padding: '2rem', minHeight: '100vh' } },
+          e('div', { style: { maxWidth: '80rem', margin: '0 auto' } },
+            e('h1', { style: { fontSize: '1.875rem', fontWeight: '700', color: '#1f2937', marginBottom: '2rem' } }, 'Blog Post Generator'),
+            e('div', { className: 'flex flex-col layout-row gap-8' },
+              e('div', { className: 'left-panel space-y-6' },
+                e('div', null,
+                  e('label', { style: { display:'block', fontSize:'.875rem', fontWeight:'500', color:'#374151', marginBottom:'.5rem' } }, 'Post Title'),
+                  e('input', { type:'text', value: title, onChange: function(ev) { setTitle(ev.target.value); }, className: 'w-full p-2 text-sm', placeholder: 'Enter your post title' })
+                ),
+                e('div', null,
+                  e('label', { style: { display:'block', fontSize:'.875rem', fontWeight:'500', color:'#374151', marginBottom:'.5rem' } }, 'Outline / Notes'),
+                  e('textarea', { value: outline, onChange: function(ev) { setOutline(ev.target.value); }, className: 'w-full p-2 h-32 text-sm resize-none', placeholder: 'Enter your post outline or notes' })
+                ),
+                e('div', null,
+                  e('label', { style: { display:'block', fontSize:'.875rem', fontWeight:'500', color:'#374151', marginBottom:'.5rem' } }, 'Target Keywords'),
+                  e('input', { type:'text', value: keywords, onChange: function(ev) { setKeywords(ev.target.value); }, className: 'w-full p-2 text-sm', placeholder: 'Enter target keywords (comma separated)' })
+                ),
+                e('button', { onClick: generatePost, disabled: loading, className: 'w-full btn-dark py-2 px-4 rounded transition-colors text-sm font-medium' }, loading ? 'Generating…' : 'Generate Blog Post'),
+                e('button', { onClick: searchTopResults, disabled: searchLoading, className: 'w-full btn-mid py-2 px-4 rounded transition-colors text-sm font-medium' }, searchLoading ? 'Searching…' : 'Check Top 10 Results'),
+                error && e('div', { style: { color:'#dc2626', fontSize:'.875rem', background:'#fef2f2', padding:'.75rem', borderRadius:'.25rem', border:'1px solid #fecaca' } }, error),
+                searchResults && e('div', { className: 'mt-4' },
+                  e('h3', { style: { fontSize:'1rem', fontWeight:'600', color:'#1f2937', marginBottom:'.75rem' } }, 'Top Search Results'),
+                  e('div', { className: 'space-y-3' }, searchItems)
+                )
+              ),
+              e('div', { className: 'right-panel' },
+                e('div', { className: 'p-6 bg-gray-50 rounded min-h-500 relative' }, rightContent)
+              )
+            )
+          )
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById('blog-root')).render(e(BlogPostGenerator));
+    } catch (err) {
+      document.getElementById('blog-root').innerHTML =
+        '<div style="padding:2rem;color:#dc2626;font-family:sans-serif"><strong>Blog Post Generator failed to load.</strong><br>' +
+        '<span style="font-size:.875rem">' + (err && err.message ? err.message : String(err)) + '</span></div>';
+    }
+  </script>
+
+  <!-- ── 4. Text to Image (direct Stability AI API) ─────────────────────── -->
+  <script>
+    'use strict';
+    var imgIsLoading   = false;
+    var imgPromptEl    = document.getElementById('img-prompt');
+    var imgErrorEl     = document.getElementById('img-error');
+    var imgGenerateBtn = document.getElementById('img-generate-btn');
+    var imgArea        = document.getElementById('img-area');
+
+    imgPromptEl.addEventListener('keydown', function(ev) {
+      if ((ev.ctrlKey || ev.metaKey) && ev.key === 'Enter') imgGenerate();
+    });
+
+    async function imgGenerate() {
+      var prompt = imgPromptEl.value.trim();
+      if (!prompt) { imgShowError('Please enter a description.'); return; }
+      var s = getSettings();
+      if (!s.stabilityKey) { imgShowError('Stability AI key not set. Go to ⚙️ Settings.'); return; }
+      if (imgIsLoading) return;
+      imgSetLoading(true); imgShowError(''); imgShowSkeleton();
+      try {
+        var form = new FormData();
+        form.append('prompt', prompt);
+        form.append('output_format', 'jpeg');
+        form.append('model', 'sd3-large-turbo');
+        var res  = await fetch('https://api.stability.ai/v2beta/stable-image/generate/sd3', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + s.stabilityKey, 'Accept': 'application/json' },
+          body: form
+        });
+        var data = await res.json();
+        if (!res.ok) throw new Error(data.errors ? data.errors[0] : (data.message || 'Error ' + res.status));
+        var imgSrc = data.image ? 'data:image/jpeg;base64,' + data.image : (data.data && data.data[0]);
+        if (!imgSrc) throw new Error('No image returned. Please try again.');
+        imgShowImage(imgSrc, prompt);
+      } catch (err) {
+        imgShowError(err.message || 'Something went wrong. Please try again.');
+        imgShowPlaceholder();
+      }
+      imgSetLoading(false);
+    }
+
+    function imgSetLoading(val) {
+      imgIsLoading = val; imgPromptEl.disabled = val; imgGenerateBtn.disabled = val;
+      imgGenerateBtn.innerHTML = val ? '<i class="fas fa-circle-notch fa-spin"></i> Generating…' : 'Generate Image';
+    }
+    function imgShowError(msg) { imgErrorEl.textContent = msg; }
+    function imgShowSkeleton() { imgArea.innerHTML = '<div class="image-skeleton"><i class="fas fa-image"></i></div>'; }
+    function imgShowPlaceholder() { imgArea.innerHTML = '<div class="image-placeholder"><i class="fas fa-image"></i><p>Your generated image will appear here</p></div>'; }
+    function imgShowImage(src, prompt) {
+      var safe = prompt.replace(/"/g, '&quot;');
+      var filename = prompt.slice(0, 50).replace(/[^a-z0-9 ]/gi, '').trim().replace(/\s+/g, '-') + '.jpg';
+      imgArea.innerHTML = '<img class="generated-img" src="' + src + '" alt="Generated image: ' + safe + '" />' +
+        '<a class="download-btn" href="' + src + '" download="' + filename + '"><i class="fas fa-download"></i> Download</a>';
+    }
+  </script>
+
+  <!-- ── 5. ROI Calculator ─────────────────────────────────────────────── -->
+  <script>
+    'use strict';
+    function roiOnChange() {
+      var i = document.getElementById('roi-initial').value.trim();
+      var f = document.getElementById('roi-final').value.trim();
+      if (i !== '' && f !== '') roiCalculate(); else { roiSetError(''); roiHideResult(); }
+    }
+    function roiCalculate() {
+      roiSetError(''); roiHideResult();
+      var ri = document.getElementById('roi-initial').value.trim();
+      var rf = document.getElementById('roi-final').value.trim();
+      if (ri === '' || rf === '') { roiSetError('Please enter values in both fields.'); return; }
+      var initial = parseFloat(ri), finalV = parseFloat(rf);
+      if (isNaN(initial) || isNaN(finalV)) { roiSetError('Please enter valid numbers.'); return; }
+      if (initial <= 0) { roiSetError('Initial investment must be greater than zero.'); return; }
+      var roi = ((finalV - initial) / initial) * 100, net = finalV - initial;
+      var sign = net >= 0 ? '+' : '';
+      var cls  = roi > 0 ? 'positive' : roi < 0 ? 'negative' : 'zero';
+      document.getElementById('roi-value').textContent = roi.toFixed(2) + '%';
+      document.getElementById('roi-value').className   = 'result-value ' + cls;
+      document.getElementById('roi-sub').textContent   = 'Net: ' + sign + '$' + roiFormat(net);
+      roiShowResult();
+    }
+    function roiSetError(msg)  { document.getElementById('roi-error').textContent = msg; }
+    function roiShowResult()   { document.getElementById('roi-result').classList.add('visible'); }
+    function roiHideResult()   { document.getElementById('roi-result').classList.remove('visible'); }
+    function roiFormat(n) { return Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    document.addEventListener('keydown', function(ev) {
+      if (ev.key === 'Enter' && document.getElementById('tab-roi').classList.contains('active')) roiCalculate();
+    });
+  </script>
+</body>
+</html>
